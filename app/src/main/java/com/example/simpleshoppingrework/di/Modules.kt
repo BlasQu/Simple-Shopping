@@ -1,8 +1,10 @@
 package com.example.simpleshoppingrework.di
 
-class Modules {
+import com.example.simpleshoppingrework.shopping.fragments.ShoppingListFragment
+import org.koin.dsl.module
 
-    val module = {
-
+object Modules {
+    val fragmentsModule = module {
+        factory { ShoppingListFragment() }
     }
 }
