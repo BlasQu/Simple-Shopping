@@ -1,10 +1,10 @@
-package com.example.simpleshoppingrework.shopping
+package com.example.simpleshoppingrework.feature.shopping
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.simpleshoppingrework.R
 import com.example.simpleshoppingrework.databinding.ActivityShoppingBinding
-import com.example.simpleshoppingrework.shopping.fragments.ShoppingListFragment
+import com.example.simpleshoppingrework.feature.shopping.fragments.shoppinglists.ShoppingListFragment
 import org.koin.android.ext.android.inject
 
 class ShoppingActivity : AppCompatActivity() {
@@ -18,6 +18,14 @@ class ShoppingActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupFragment()
+        setupToolbar()
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(binding.holderToolbar.root)
+        supportActionBar.apply {
+            title = "Shopping lists"
+        }
     }
 
     private fun setupFragment() {

@@ -1,6 +1,7 @@
 package com.example.simpleshoppingrework.di
 
 import android.app.Application
+import com.example.simpleshoppingrework.di.Modules.databaseModule
 import com.example.simpleshoppingrework.di.Modules.fragmentsModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -12,7 +13,7 @@ class ApplicationProvider: Application() {
         super.onCreate()
         startKoin {
             androidContext(this@ApplicationProvider)
-            modules(listOf(fragmentsModule))
+            modules(listOf(fragmentsModule, databaseModule))
         }
     }
 }
