@@ -1,9 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:id="@+id/toolbar"
-    android:background="@color/lime"
-    android:theme="@style/CustomToolbar"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:elevation="8dp"
     android:layout_height="wrap_content">
 
-</androidx.appcompat.widget.Toolbar>
+    <androidx.appcompat.widget.Toolbar
+        android:layout_width="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/toolbar"
+        android:background="@color/lime"
+        android:theme="@style/CustomToolbar"/>
+
+    <ImageView
+        android:id="@+id/add_shopping_list"
+        android:src="@drawable/ic_baseline_add_shopping_cart_24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/holder_add_item"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="match_parent"
+        android:elevation="16dp"
+        android:layout_height="0dp">
+
+    <ImageView
+        android:id="@+id/cancel"
+        android:src="@drawable/ic_baseline_west_24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:padding="12dp"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <ImageView
+        android:id="@+id/add"
+        android:src="@drawable/ic_baseline_add_24"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:adjustViewBounds="true"
+        android:padding="12dp"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <EditText
+        android:layout_width="0dp"
+        android:id="@+id/input_list_name"
+        app:layout_constraintStart_toEndOf="@id/cancel"
+        android:textColor="@color/black"
+        android:hint="@string/add_new_hint"
+        app:layout_constraintEnd_toStartOf="@id/add"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_height="0dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
