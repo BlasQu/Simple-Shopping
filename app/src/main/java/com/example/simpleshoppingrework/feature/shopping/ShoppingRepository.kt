@@ -9,6 +9,7 @@ class ShoppingRepository(
 ) {
 
     suspend fun insertList(list: ShoppingList) = dao.insertList(list)
+    suspend fun deleteLists(lists: List<ShoppingList>) = dao.deleteLists(lists)
     fun readData(): Flow<List<ShoppingList>> = dao.readData()
 
 }

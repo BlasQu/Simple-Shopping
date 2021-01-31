@@ -4,13 +4,16 @@ import android.app.Application
 import androidx.room.Room
 import com.example.simpleshoppingrework.db.ShoppingListsDatabase
 import com.example.simpleshoppingrework.feature.adapters.ShoppingListsAdapter
+import com.example.simpleshoppingrework.feature.shopping.ShoppingActivity
 import com.example.simpleshoppingrework.feature.shopping.ShoppingRepository
 import com.example.simpleshoppingrework.feature.shopping.ShoppingViewModel
 import com.example.simpleshoppingrework.feature.shopping.fragments.shoppingdetails.ShoppingDetailsFragment
 import com.example.simpleshoppingrework.feature.shopping.fragments.shoppinglists.ShoppingListFragment
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.android.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
+@ExperimentalCoroutinesApi
 object Modules {
     val fragmentsModule = module {
         factory { ShoppingListFragment() }
@@ -34,6 +37,6 @@ object Modules {
     }
 
     val adaptersModule = module {
-        factory { ShoppingListsAdapter() }
+        factory { (shoppingActivity: ShoppingActivity) -> ShoppingListsAdapter(shoppingActivity) }
     }
 }

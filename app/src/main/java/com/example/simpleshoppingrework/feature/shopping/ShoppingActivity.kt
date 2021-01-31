@@ -14,9 +14,9 @@ import java.util.*
 
 class ShoppingActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityShoppingBinding
+    lateinit var binding: ActivityShoppingBinding
     private val shoppingListFragment by inject<ShoppingListFragment>()
-    private val viewmodel by viewModel<ShoppingViewModel>()
+    val viewmodel by viewModel<ShoppingViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

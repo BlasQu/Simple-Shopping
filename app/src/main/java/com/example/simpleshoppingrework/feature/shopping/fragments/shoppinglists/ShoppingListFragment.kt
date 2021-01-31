@@ -12,16 +12,24 @@ import com.example.simpleshoppingrework.databinding.FragmentShoppingListBinding
 import com.example.simpleshoppingrework.feature.adapters.ShoppingListsAdapter
 import com.example.simpleshoppingrework.feature.shopping.ShoppingActivity
 import com.example.simpleshoppingrework.feature.shopping.ShoppingViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.sharedViewModel
+import org.koin.core.parameter.parametersOf
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 class ShoppingListFragment : Fragment(R.layout.fragment_shopping_list) {
 
     private lateinit var binding: FragmentShoppingListBinding
     private val viewmodel by sharedViewModel<ShoppingViewModel>()
-    private val shoppingListsAdapter by inject<ShoppingListsAdapter>()
+    private val shoppingListsAdapter by inject<ShoppingListsAdapter>() {
+        parametersOf(shoppingActivity)
+    }
     private lateinit var shoppingActivity: ShoppingActivity
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -30,6 +38,7 @@ class ShoppingListFragment : Fragment(R.layout.fragment_shopping_list) {
         shoppingActivity = activity as ShoppingActivity
 
         setupRecyclerView()
+
     }
 
     private fun setupRecyclerView() {

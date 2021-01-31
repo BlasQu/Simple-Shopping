@@ -1,9 +1,6 @@
 package com.example.simpleshoppingrework.db
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.example.simpleshoppingrework.db.entities.ShoppingList
 import kotlinx.coroutines.flow.Flow
 
@@ -15,4 +12,7 @@ interface ShoppingListsDao {
 
     @Query("SELECT * FROM shoppinglists")
     fun readData(): Flow<List<ShoppingList>>
+
+    @Delete
+    suspend fun deleteLists(lists: List<ShoppingList>)
 }
