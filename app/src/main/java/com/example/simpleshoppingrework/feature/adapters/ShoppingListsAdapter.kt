@@ -44,7 +44,7 @@ class ShoppingListsAdapter(
                 if (isEnabled) {
                     itemSelect(binding, adapterPosition)
                 } else {
-                    //Go to details screen/fragment
+                    parentContext.changeFragment()
                 }
             }
             binding.root.setOnLongClickListener {

@@ -6,16 +6,23 @@ import android.view.View
 import com.example.simpleshoppingrework.R
 import com.example.simpleshoppingrework.databinding.ActivityShoppingBinding
 import com.example.simpleshoppingrework.db.entities.ShoppingList
+import com.example.simpleshoppingrework.feature.shopping.fragments.shoppingdetails.ShoppingDetailsFragment
 import com.example.simpleshoppingrework.feature.shopping.fragments.shoppinglists.ShoppingListFragment
+import com.example.simpleshoppingrework.util.data.Details
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
+@FlowPreview
+@ExperimentalCoroutinesApi
 class ShoppingActivity : AppCompatActivity() {
 
     lateinit var binding: ActivityShoppingBinding
     private val shoppingListFragment by inject<ShoppingListFragment>()
+    private val detailsFragment by inject<ShoppingDetailsFragment>()
     val viewmodel by viewModel<ShoppingViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,16 +42,33 @@ class ShoppingActivity : AppCompatActivity() {
                 supportActionBar!!.title = ""
                 addShoppingList.visibility = View.GONE
             }
-            cancel.setOnClickListener {
-                holderAddItem.visibility = View.GONE
-                supportActionBar!!.title = "Shopping lists"
-                addShoppingList.visibility = View.VISIBLE
+
+            addShoppingProduct.setOnClickListener {
+                holderAddItem.visibility = View.VISIBLE
+                supportActionBar!!.apply {
+                    title = ""
+                    setDisplayHomeAsUpEnabled(false)
+                }
+                addShoppingProduct.visibility = View.GONE
             }
+
+            cancel.setOnClickListener {
+                onBackPressed()
+            }
+
             add.setOnClickListener {
                 if(inputListName.text.isNotEmpty()) {
-                    val currentDate = SimpleDateFormat("DD.MM", Locale.getDefault()).format(Calendar.getInstance().time)
-                    viewmodel.insertList(ShoppingList(0,inputListName.text.toString(), currentDate.toString()))
-                    inputListName.text.clear()
+                    when (getLastFragment()) {
+                        "ShoppingListFragment" -> {
+                            val currentDate = SimpleDateFormat("DD.MM", Locale.getDefault()).format(Calendar.getInstance().time)
+                            viewmodel.insertList(ShoppingList(0,inputListName.text.toString(), currentDate.toString(), listOf<Details>()))
+                            inputListName.text.clear()
+                        }
+
+                        "ShoppingDetailsFragment" -> {
+
+                        }
+                    }
                 } else inputListName.error = resources.getString(R.string.text_error)
             }
         }
@@ -62,6 +86,93 @@ class ShoppingActivity : AppCompatActivity() {
             replace(R.id.fragment_container, shoppingListFragment)
             addToBackStack("ShoppingListFragment")
             commit()
+        }
+    }
+
+    private fun getLastFragment(): String {
+        val lastBackStackEntry = supportFragmentManager.backStackEntryCount - 1
+        val fragmentName = supportFragmentManager.getBackStackEntryAt(lastBackStackEntry).name!!
+        return fragmentName
+    }
+
+    fun changeFragment() {
+        when (getLastFragment()) {
+            "ShoppingListFragment" -> {
+                supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.fragment_container, detailsFragment)
+                    addToBackStack("ShoppingDetailsFragment")
+                    commit()
+                }
+
+                supportActionBar!!.apply {
+                    title = "Details"
+                    setDisplayHomeAsUpEnabled(true)
+                }
+
+                binding.holderToolbar.apply {
+                    addShoppingList.visibility = View.GONE
+                    addShoppingProduct.visibility = View.VISIBLE
+                }
+            }
+            "ShoppingDetailsFragment" -> {
+                supportFragmentManager.beginTransaction().apply {
+                    replace(R.id.fragment_container, shoppingListFragment)
+                    addToBackStack("ShoppingListFragment")
+                    commit()
+                }
+
+                supportActionBar!!.apply {
+                    title = "Shopping lists"
+                    setDisplayHomeAsUpEnabled(false)
+                }
+
+                binding.holderToolbar.apply {
+                    addShoppingList.visibility = View.VISIBLE
+                    addShoppingProduct.visibility = View.GONE
+                }
+            }
+        }
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        onBackPressed()
+        return super.onSupportNavigateUp()
+    }
+
+    override fun onBackPressed() {
+        when (getLastFragment()) {
+            "ShoppingListFragment" -> {
+                if (binding.holderToolbar.holderAddItem.visibility == View.VISIBLE) {
+                    binding.holderToolbar.apply {
+                        holderAddItem.visibility = View.GONE
+                        addShoppingList.visibility = View.VISIBLE
+                    }
+                    supportActionBar!!.title = "Shopping lists"
+                }
+                else finish()
+            }
+            "ShoppingDetailsFragment" -> {
+                if (binding.holderToolbar.holderAddItem.visibility == View.VISIBLE) {
+                    binding.holderToolbar.apply {
+                        holderAddItem.visibility = View.GONE
+                        addShoppingProduct.visibility = View.VISIBLE
+                    }
+                    supportActionBar!!.apply {
+                        title = "Details"
+                        setDisplayHomeAsUpEnabled(true)
+                    }
+                } else {
+                    supportFragmentManager.beginTransaction().apply {
+                        replace(R.id.fragment_container, shoppingListFragment)
+                        addToBackStack("ShoppingListFragment")
+                        commit()
+                    }
+                    supportActionBar!!.apply {
+                        title = "Shopping lists"
+                        setDisplayHomeAsUpEnabled(false)
+                    }
+                }
+            }
         }
     }
 }
