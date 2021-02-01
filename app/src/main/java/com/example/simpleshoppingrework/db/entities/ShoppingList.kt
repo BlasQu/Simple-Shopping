@@ -11,5 +11,5 @@ data class ShoppingList(
     @PrimaryKey(autoGenerate = true) @ColumnInfo(name = "id") val id: Int = 0,
     @ColumnInfo(name = "name") val name: String,
     @ColumnInfo(name = "date") val date: String,
-    @ColumnInfo(name = "details") val details: List<Details>
+    @ColumnInfo(name = "details") var details: List<Details>
     )

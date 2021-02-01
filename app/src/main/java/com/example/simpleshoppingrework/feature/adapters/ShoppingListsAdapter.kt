@@ -23,6 +23,7 @@ import org.koin.android.ext.android.bind
 import kotlin.coroutines.coroutineContext
 
 @ExperimentalCoroutinesApi
+@FlowPreview
 class ShoppingListsAdapter(
         val parentContext: ShoppingActivity,
 ): RecyclerView.Adapter<ShoppingListsAdapter.ViewHolder>() {
@@ -37,7 +38,6 @@ class ShoppingListsAdapter(
     private val cyanColor = parentContext.resources.getColor(R.color.selected_item_cyan)
     private val whiteColor = parentContext.resources.getColor(R.color.white)
 
-    @FlowPreview
     inner class ViewHolder(val binding: RvItemBinding): RecyclerView.ViewHolder(binding.root) {
         init {
             binding.root.setOnClickListener {
@@ -45,8 +45,10 @@ class ShoppingListsAdapter(
                     itemSelect(binding, adapterPosition)
                 } else {
                     parentContext.changeFragment()
+                    viewmodel.currentList.offer(adapterPosition)
                 }
             }
+
             binding.root.setOnLongClickListener {
                 lateinit var job: Job
                 if (!isEnabled) parentContext.binding.holderToolbar.toolbar.startActionMode(

@@ -74,10 +74,18 @@
         app:layout_constraintStart_toEndOf="@id/cancel"
         android:textColor="@color/black"
         android:hint="@string/add_new_hint"
-        app:layout_constraintEnd_toStartOf="@id/add"
+        app:layout_constraintEnd_toStartOf="@id/number_picker"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:layout_height="0dp"/>
+
+        <NumberPicker
+            android:id="@+id/number_picker"
+            android:layout_width="wrap_content"
+            android:theme="@style/CustomNumberPicker"
+            android:visibility="gone"
+            android:layout_height="match_parent"
+            app:layout_constraintEnd_toStartOf="@id/add" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -6,6 +6,8 @@ import com.example.simpleshoppingrework.db.entities.ShoppingList
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.ConflatedBroadcastChannel
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
 @ExperimentalCoroutinesApi
@@ -14,7 +16,8 @@ class ShoppingViewModel(
 ): ViewModel() {
 
     val data: Flow<List<ShoppingList>> = repo.readData()
-    val selectedItemsCount = ConflatedBroadcastChannel<Int>(0)
+    val currentList = ConflatedBroadcastChannel<Int>()
+    val selectedItemsCount = ConflatedBroadcastChannel<Int>()
 
     fun insertList(list: ShoppingList) {
         viewModelScope.launch {
@@ -28,4 +31,9 @@ class ShoppingViewModel(
         }
     }
 
+    fun updateList(list: ShoppingList) {
+        viewModelScope.launch {
+            repo.updateList(list)
+        }
+    }
 }

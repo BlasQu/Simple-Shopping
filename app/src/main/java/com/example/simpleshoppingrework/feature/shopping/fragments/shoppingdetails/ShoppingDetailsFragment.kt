@@ -1,6 +1,7 @@
 package com.example.simpleshoppingrework.feature.shopping.fragments.shoppingdetails
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
@@ -13,6 +14,7 @@ import com.example.simpleshoppingrework.feature.shopping.ShoppingActivity
 import com.example.simpleshoppingrework.feature.shopping.ShoppingViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
@@ -43,10 +45,18 @@ class ShoppingDetailsFragment: Fragment(R.layout.fragment_shopping_details) {
         val decorationLine = DividerItemDecoration(shoppingActivity, DividerItemDecoration.VERTICAL).apply {
             setDrawable(resources.getDrawable(R.drawable.decoration_line))
         }
+
         binding.rvDetails.apply {
             layoutManager = LinearLayoutManager(shoppingActivity)
             this.adapter = detailsAdapter
             addItemDecoration(decorationLine)
+        }
+
+        lifecycleScope.launch {
+            viewmodel.data.collect {
+                detailsAdapter.submitData(it[viewmodel.currentList.value].details)
+                Log.d("Debug", "new data")
+            }
         }
     }
 }

@@ -1,8 +1,14 @@
 package com.example.simpleshoppingrework.feature.shopping
 
+import android.app.Activity
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.os.IBinder
+import android.util.Log
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.lifecycleScope
 import com.example.simpleshoppingrework.R
 import com.example.simpleshoppingrework.databinding.ActivityShoppingBinding
 import com.example.simpleshoppingrework.db.entities.ShoppingList
@@ -11,6 +17,11 @@ import com.example.simpleshoppingrework.feature.shopping.fragments.shoppinglists
 import com.example.simpleshoppingrework.util.data.Details
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
 import java.text.SimpleDateFormat
@@ -45,6 +56,7 @@ class ShoppingActivity : AppCompatActivity() {
 
             addShoppingProduct.setOnClickListener {
                 holderAddItem.visibility = View.VISIBLE
+                numberPicker.visibility = View.VISIBLE
                 supportActionBar!!.apply {
                     title = ""
                     setDisplayHomeAsUpEnabled(false)
@@ -66,7 +78,17 @@ class ShoppingActivity : AppCompatActivity() {
                         }
 
                         "ShoppingDetailsFragment" -> {
-
+                            lateinit var job: Job
+                            job = lifecycleScope.launch {
+                                viewmodel.data.collect {
+                                    val details = it[viewmodel.currentList.value].details.toMutableList()
+                                    details.add(Details(inputListName.text.toString(), "X: ${numberPicker.value}", false))
+                                    it[viewmodel.currentList.value].details = details
+                                    viewmodel.updateList(it[viewmodel.currentList.value])
+                                    inputListName.text.clear()
+                                    job.cancel()
+                                }
+                            }
                         }
                     }
                 } else inputListName.error = resources.getString(R.string.text_error)
@@ -75,6 +97,11 @@ class ShoppingActivity : AppCompatActivity() {
     }
 
     private fun setupToolbar() {
+        binding.holderToolbar.numberPicker.apply {
+            minValue = 1
+            maxValue = 20
+        }
+
         setSupportActionBar(binding.holderToolbar.toolbar)
         supportActionBar.apply {
             title = "Shopping lists"
@@ -95,6 +122,17 @@ class ShoppingActivity : AppCompatActivity() {
         return fragmentName
     }
 
+    fun updateDetails(details: List<Details>) {
+        lateinit var job: Job
+        job = lifecycleScope.launch {
+            viewmodel.data.collect {
+                it[viewmodel.currentList.value].details = details
+                viewmodel.updateList(it[viewmodel.currentList.value])
+                job.cancel()
+            }
+        }
+    }
+
     fun changeFragment() {
         when (getLastFragment()) {
             "ShoppingListFragment" -> {
@@ -112,25 +150,10 @@ class ShoppingActivity : AppCompatActivity() {
                 binding.holderToolbar.apply {
                     addShoppingList.visibility = View.GONE
                     addShoppingProduct.visibility = View.VISIBLE
+					holderAddItem.visibility = View.GONE
                 }
             }
-            "ShoppingDetailsFragment" -> {
-                supportFragmentManager.beginTransaction().apply {
-                    replace(R.id.fragment_container, shoppingListFragment)
-                    addToBackStack("ShoppingListFragment")
-                    commit()
-                }
-
-                supportActionBar!!.apply {
-                    title = "Shopping lists"
-                    setDisplayHomeAsUpEnabled(false)
-                }
-
-                binding.holderToolbar.apply {
-                    addShoppingList.visibility = View.VISIBLE
-                    addShoppingProduct.visibility = View.GONE
-                }
-            }
+            else -> onBackPressed()
         }
     }
 
@@ -156,6 +179,7 @@ class ShoppingActivity : AppCompatActivity() {
                     binding.holderToolbar.apply {
                         holderAddItem.visibility = View.GONE
                         addShoppingProduct.visibility = View.VISIBLE
+                        numberPicker.visibility = View.GONE
                     }
                     supportActionBar!!.apply {
                         title = "Details"
@@ -171,7 +195,26 @@ class ShoppingActivity : AppCompatActivity() {
                         title = "Shopping lists"
                         setDisplayHomeAsUpEnabled(false)
                     }
+                    binding.holderToolbar.apply {
+                        addShoppingProduct.visibility = View.GONE
+                        addShoppingList.visibility = View.VISIBLE
+                    }
                 }
+            }
+        }
+    }
+
+    fun deleteSelectedItems(details: MutableList<Details>, selectedItems: List<Details>) {
+        lateinit var job: Job
+        job = lifecycleScope.launch {
+            viewmodel.data.collect {
+                for (every in selectedItems) {
+                    if (details.contains(every)) details.remove(every)
+                }
+                it[viewmodel.currentList.value].details = details
+                viewmodel.updateList(it[viewmodel.currentList.value])
+                viewmodel.selectedItemsCount.send(0)
+                job.cancel()
             }
         }
     }

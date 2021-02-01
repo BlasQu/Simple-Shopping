@@ -37,6 +37,8 @@ class DiffCallbackDetails(val oldList: List<Details>, val newList: List<Details>
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
-        return oldList[oldItemPosition].count == newList[newItemPosition].count
+        return oldList[oldItemPosition].product == newList[newItemPosition].product &&
+                oldList[oldItemPosition].count == newList[newItemPosition].count
+
     }
 }
