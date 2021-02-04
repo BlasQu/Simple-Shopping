@@ -208,13 +208,15 @@ class ShoppingActivity : AppCompatActivity() {
         lateinit var job: Job
         job = lifecycleScope.launch {
             viewmodel.data.collect {
-                for (every in selectedItems) {
-                    if (details.contains(every)) details.remove(every)
+                if (it.isNotEmpty()) {
+                    for (every in selectedItems) {
+                        if (details.contains(every)) details.remove(every)
+                    }
+                    it[viewmodel.currentList.value].details = details
+                    viewmodel.updateList(it[viewmodel.currentList.value])
+                    viewmodel.selectedItemsCount.send(0)
+                    job.cancel()
                 }
-                it[viewmodel.currentList.value].details = details
-                viewmodel.updateList(it[viewmodel.currentList.value])
-                viewmodel.selectedItemsCount.send(0)
-                job.cancel()
             }
         }
     }
